@@ -5,6 +5,7 @@ defmodule Todolist.Repo.Migrations.CreateUsers do
     create table(:users) do
       add :username, :string
       add :password, :string
+      add :salt, :string
 
       timestamps(type: :utc_datetime)
     end

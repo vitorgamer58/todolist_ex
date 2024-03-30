@@ -12,11 +12,16 @@ defmodule TodolistWeb.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/users/#{user}")
-      |> render(:show, user: user)
+    case Accounts.create_user(user_params) do
+      {:ok, %User{} = user} ->
+        conn
+        |> put_status(:created)
+        |> render(:show, user: user)
+
+      {:error, reason} ->
+        conn
+        |> put_status(:bad_request)
+        |> json(%{error: reason})
     end
   end
 

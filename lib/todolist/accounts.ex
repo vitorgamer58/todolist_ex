@@ -49,11 +49,17 @@ defmodule Todolist.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_user(attrs \\ %{}) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+def create_user(attrs \\ %{}) do
+  case username_exists(attrs["username"]) do
+    true -> {:error, "User already exists"}
+    false ->
+      %User{}
+      |> User.changeset(attrs)
+      |> User.hash_password_and_salt()
+      |> Repo.insert()
   end
+end
+
 
   @doc """
   Updates a user.
@@ -100,5 +106,17 @@ defmodule Todolist.Accounts do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  @doc """
+  Checks if a username already exists in the database.
+  ## Parameters
+    - `username`: The username to check for existence.
+  ## Returns
+    - boolean
+  """
+  def username_exists(username) do
+    query = from u in User, where: u.username == ^username
+    Repo.exists?(query)
   end
 end

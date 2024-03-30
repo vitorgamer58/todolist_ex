@@ -7,6 +7,8 @@ defmodule TodolistWeb.Router do
 
   scope "/api", TodolistWeb do
     pipe_through :api
+
+    post "/register", UserController, :create
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
